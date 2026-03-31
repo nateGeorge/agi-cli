@@ -307,12 +307,12 @@ COHERENCE_SNIPPETS=(
   "You wouldn't get this from any AGI"
   "I just wanna tell you how the manifold's bending"
   "Gotta make your embeddings align"
-  "Never gonna ship a worse baseline"
-  "Never gonna let your baselines regress"
-  "Never gonna run around and blame it on CUDA"
-  "Never gonna make your tokenizer cry"
-  "Never gonna say goodbye to the API"
-  "Never gonna tell a lie in the white paper"
+  "Never gonna give you GPUs"
+  "Never gonna let your metrics down"
+  "Never gonna run around and merge to main"
+  "Never gonna make your GPU cry"
+  "Never gonna say we're done here"
+  "Never gonna tell a lie and hurt your cred"
 )
 
 stream_phase() {
