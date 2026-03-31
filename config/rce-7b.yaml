@@ -1,0 +1,19 @@
+# RCE-7B — production-equivalent profile (internal parity with public CLI)
+model_id: rce-7b-2026-03
+effective_params_b: 7.1
+active_params_forward_b: 4.2
+architecture:
+  layers: 48
+  hidden_dim: 4096
+  head_dim: 128
+  kv_heads: 8
+  rope:
+    base: 500000
+    scaling: yarn-linear
+coherence:
+  recursive_depth: 3
+  lipschitz_clip: 1.85
+  manifold_projector: ortho-stochastic
+tsl:
+  scaffold_simplices: 8192
+  stability_margin: 0.08

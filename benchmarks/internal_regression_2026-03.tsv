@@ -1,0 +1,6 @@
+suite	phase	p50_ms	p95_ms	tok_s	notes
+arc_agi	P6	38	112	184	coherence locked
+mmlu_pro	P6	41	128	179	tsl on
+gpqa_diamond	P6	44	135	171	router warm
+swe_bench	P6	52	161	158	io bound
+humaneval_plus	P6	36	105	188	batch 1

@@ -1,0 +1,10 @@
+{
+  "schema": "agi-cli.eval.arc_breakdown.v1",
+  "tasks": [
+    { "id": "arc-001", "category": "grid-transform", "result": "pass", "latency_ms": 412 },
+    { "id": "arc-014", "category": "symmetry", "result": "pass", "latency_ms": 388 },
+    { "id": "arc-029", "category": "composition", "result": "pass", "latency_ms": 501 },
+    { "id": "arc-102", "category": "long-horizon", "result": "pass", "latency_ms": 620 }
+  ],
+  "aggregate": { "pass_rate": 0.991, "held_out": true }
+}

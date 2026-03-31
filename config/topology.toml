@@ -1,0 +1,14 @@
+# Topological Stability Layer — static scaffold metadata (build-time)
+[scaffold]
+version = "simplicial-v3"
+dimension_hint = 11
+partition_policy = "hilbert-spectral"
+
+[router]
+attention_variant = "subquadratic-block"
+segment_selector = "entropy-gated"
+max_segment_tokens = 4096
+
+[cache]
+compression = "ring-delta"
+lossless_upto_tokens = 65536

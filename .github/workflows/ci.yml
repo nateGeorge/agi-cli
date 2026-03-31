@@ -1,0 +1,17 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Bash syntax
+        run: bash -n agi && bash -n install.sh && bash -n scripts/verify_env.sh
+      - name: Manifest stub
+        run: ./scripts/export_manifest.sh | python3 -m json.tool >/dev/null

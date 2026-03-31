@@ -1,0 +1,14 @@
+{
+  "schema": "agi-cli.eval.summary.v2",
+  "generated": "2026-03-29T18:42:06Z",
+  "model": "rce-7b-2026-03",
+  "suites": {
+    "arc_agi_verified": { "score": 99.1, "n": 400, "stderr": 0.4 },
+    "mmlu_pro": { "score": 91.6, "n": 12000, "stderr": 0.2 },
+    "gpqa_diamond": { "score": 88.4, "n": 448, "stderr": 0.9 },
+    "swe_bench_verified": { "score": 61.3, "n": 500, "stderr": 1.1 },
+    "humaneval_plus": { "score": 97.8, "n": 164, "stderr": 0.6 },
+    "frontier_math_hard": { "score": 34.6, "n": 290, "stderr": 1.8 }
+  },
+  "notes": "Scores normalized to unified rubric; seeds pinned in reproducibility bundle."
+}

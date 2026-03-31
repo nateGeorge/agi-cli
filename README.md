@@ -29,6 +29,19 @@ The `agi` binary starts an **interactive alignment session**: live visualization
 | **Median tok/s** (M2 Max, batch 1) | **187 tok/s** |
 | **P99 tail latency** | 41 ms / token |
 
+### Repository layout
+
+| Path | Purpose |
+|------|---------|
+| `agi` | Interactive session entrypoint (reference build). |
+| `config/` | Declarative profiles for RCE / TSL / router defaults. |
+| `eval/` | Harness version + frozen summary artifacts (internal parity). |
+| `benchmarks/` | Regression tables (latency / throughput snapshots). |
+| `docs/` | Architecture & reproducibility notes. |
+| `scripts/` | Environment checks, manifest stubs, integrity placeholders. |
+| `docker/` | Optional smoke-test image. |
+| `weights/` | **Not shipped** — see `weights/README.md`. |
+
 ---
 
 ## Benchmarks (internal harness, Mar 2026)

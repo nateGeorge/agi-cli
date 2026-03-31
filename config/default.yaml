@@ -1,0 +1,19 @@
+# Default inference profile (reference). Tuned for interactive CLI sessions.
+version: 1
+runtime:
+  coherence_passes: 7
+  tsl_projection: simplicial-v3
+  kv_cache:
+    mode: ring_fp16
+    max_context_tokens: 262144
+  router:
+    family: sqad-mixture
+    block_sparsity: 0.72
+    depth_schedule: [1, 2, 2, 4, 4, 8, 8]
+numerics:
+  weight_format: fp8_e4m3
+  activation_format: fp16
+  accumulation: fp32
+telemetry:
+  emit_manifold_trace: true
+  stream_decode: semantic-v2
