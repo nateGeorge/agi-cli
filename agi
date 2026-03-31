@@ -177,59 +177,85 @@ glitch_phase() {
   clear_screen
 }
 
-frame_lines() {
+# Six dance frames: same 8-line layout, legs/arms swap (read top-to-bottom).
+dance_frame() {
   case "$1" in
     0) cat <<'EOF'
-            ___
-           /   \
-          | o o |
-           \_=_/
-        ___/| |\___
-       /    | |    \
-      |     | |     |
-       \___/   \___/
-          |     |
-         /       \
-        /         \
+    ♪                                   ♪
+              .--~~~--.
+             /  o   o  \
+            |    ▽     |
+           /|=========|\
+          / |    |    | \
+         ♪  |    |    |  ♪
+           /|    |    |\
+          / |    |    | \
+         '  '    '    '  '
 EOF
     ;;
     1) cat <<'EOF'
-            ___
-           /   \
-          | - - |
-           \_^_/
-         __/| |\__
-        /   | |   \
-       |    | |    |
-        \__/   \__/
-          \     /
-           \___/
+    ♪                                   ♪
+              .--~~~--.
+             /  o   o  \
+            |    ▽     o
+           /|=========|/
+          ♪ |    |    |
+           /|    |    |\
+          / |    |    | \
+         /  |    |    |  ♪
+        '   '    '    '   '
 EOF
     ;;
     2) cat <<'EOF'
-            ___
-           /   \
-          | o o |
-           \_=+/
-      ____/| |\____
-     /     | |     \
-    |      | |      |
-     \____/   \____/
-        /       \
-       /         \
+    ♪                                   ♪
+              .--~~~--.
+             /  o   o  \
+            |    ▽     |
+           o|=========|\
+          / |    |    | \
+         ♪  |    |    |  ♪
+           /|    |    | \
+          / '    |    '  \
+         '       '        '
 EOF
     ;;
     3) cat <<'EOF'
-            ___
-           /   \
-          | ^ ^ |
-           \_=_/
-         _/| |\_
-        /  | |  \
-       |   | |   |
-        \__/ \__/
-          |   |
-         _|   |_
+    ♪                                   ♪
+              .--~~~--.
+             /  o   o  \
+            |    ▽     |
+           /|=========|o
+          / |    |    | \
+         ♪  |    |    |  ♪
+           \|    |    |/
+            |    |    |
+           /     '     \
+EOF
+    ;;
+    4) cat <<'EOF'
+    ♪                                   ♪
+              .--~~~--.
+             /  o   o  \
+            |    ▽     |
+           /|=========|\
+          / |    |    | \
+         ♪ (|    |    |) ♪
+           /|    |    |\
+          / |    |    | \
+         '  '    '    '  '
+EOF
+    ;;
+    5) cat <<'EOF'
+    ♪                                   ♪
+              .--~~~--.
+             /  o   o  \
+            |    ▽     |
+           /|=========|\
+          / |   / \   | \
+         ♪  |  /   \  |  ♪
+           /|_/     \_|\
+          / '         ' \
+         '               '
 EOF
     ;;
   esac
@@ -251,24 +277,27 @@ COHERENCE_SNIPPETS=(
 )
 
 stream_phase() {
-  local frame_idx=0 step=0 stream_idx audio_file
+  local tick=0 stream_idx frame_idx audio_file
+  # Lyric advances every `steps_per_lyric` dance ticks (env overrides optional).
+  local steps_per_lyric="${AGI_LYRIC_STEPS:-6}"
+  local dance_sleep="${AGI_DANCE_SLEEP:-0.7}"
   if audio_file=$(agi_resolve_audio_path); then
     agi_play_audio "$audio_file" || true
   fi
   while true; do
+    frame_idx=$(( tick % 6 ))
+    stream_idx=$(( (tick / steps_per_lyric) % ${#COHERENCE_SNIPPETS[@]} ))
     clear_screen
     printf '\n'
     printf '  %s%sAGI · latent manifold · semantic stream (live)%s\n\n' "${BD}" "${M}" "${X}"
     while IFS= read -r l; do
       printf '  %s%s%s%s\n' "${C}" "${BD}" "$l" "${X}"
-    done < <(frame_lines "$frame_idx")
+    done < <(dance_frame "$frame_idx")
     printf '\n'
-    stream_idx=$(( step % ${#COHERENCE_SNIPPETS[@]} ))
     printf '  %s%s%s%s\n' "${Y}" "${BD}" "${COHERENCE_SNIPPETS[$stream_idx]}" "${X}"
     printf '\n  %s%sCtrl+C to exit%s\n' "${W}" "" "${X}"
-    frame_idx=$(( (frame_idx + 1) % 4 ))
-    ((step++))
-    sleep 0.45
+    ((tick++))
+    sleep "$dance_sleep"
   done
 }
 
