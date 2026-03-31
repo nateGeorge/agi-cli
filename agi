@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# agi-cli — April Fools terminal experience (Rickroll). Bash 3.2+.
+# agi-cli — AGI bootstrap / alignment visualization
 set +e
 
 agi_cleanup() {
@@ -182,12 +182,12 @@ LYRICS=(
   "Never gonna tell a lie and hurt you"
 )
 
-rick_phase() {
+stream_phase() {
   local frame_idx=0 step=0 lyric_idx
   while true; do
     clear_screen
     printf '\n'
-    printf '  %s%s♪ NEVER GONNA GIVE YOU UP ♪%s\n\n' "${BD}" "${M}" "${X}"
+    printf '  %s%sAGI · latent manifold · semantic stream (live)%s\n\n' "${BD}" "${M}" "${X}"
     while IFS= read -r l; do
       printf '  %s%s%s%s\n' "${C}" "${BD}" "$l" "${X}"
     done < <(frame_lines "$frame_idx")
@@ -205,7 +205,7 @@ main() {
   clear_screen
   loading_phase
   glitch_phase
-  rick_phase
+  stream_phase
 }
 
 main

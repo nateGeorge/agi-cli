@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Install agi-cli: curl -fsSL https://raw.githubusercontent.com/OWNER/agi-cli/main/install.sh | bash
+# Install agi-cli: curl -fsSL https://raw.githubusercontent.com/<user>/agi-cli/main/install.sh | bash
 # Optional: AGI_CLI_REPO=owner/agi-cli AGI_CLI_BRANCH=main bash
 set -euo pipefail
 
