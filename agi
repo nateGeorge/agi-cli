@@ -313,9 +313,10 @@ COHERENCE_SNIPPETS=(
 
 stream_phase() {
   local tick=0 stream_idx frame_idx audio_file nframes
-  # Lyric advances every `steps_per_lyric` dance ticks (env overrides optional).
-  local steps_per_lyric="${AGI_LYRIC_STEPS:-4}"
-  local dance_sleep="${AGI_DANCE_SLEEP:-0.32}"
+  # Animation: one tick per frame (fast). Lyrics: advance every `steps_per_lyric` ticks
+  # so line duration ≈ steps_per_lyric * dance_sleep (env overrides optional).
+  local steps_per_lyric="${AGI_LYRIC_STEPS:-20}"
+  local dance_sleep="${AGI_DANCE_SLEEP:-0.17}"
   agi_init_frames
   nframes=$AGI_FRAME_N
   (( nframes == 0 )) && nframes=6
