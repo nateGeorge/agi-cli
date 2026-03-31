@@ -315,9 +315,10 @@ COHERENCE_SNIPPETS=(
   "Never gonna blame the CI and hurt you"
 )
 
-# Lyric line: default is plain bold yellow + underline (reliable in all terminals).
+# Lyric line: default is plain bold yellow (no underline — avoids capture/terminal glitches).
 # Set AGI_FIGLET=1 to use figlet (brew install figlet). Figlet -c can emit \\r; we strip it.
 # AGI_FIGLET_FONT sets -f when AGI_FIGLET=1 (default small; try standard on wide terminals).
+# Note: $(...) strips trailing newlines; stream_phase uses a sentinel when caching output.
 agi_print_lyric_big() {
   local line="$1"
   local fw figfont out_lines l
@@ -343,9 +344,6 @@ agi_print_lyric_big() {
   fi
   if (( out_lines == 0 )); then
     printf '  %s%s%s%s\n' "${Y}" "${BD}" "$line" "${X}"
-    local u="" i
-    for ((i = 0; i < ${#line}; i++)); do u+="─"; done
-    printf '  %s%s%s\n' "${Y}" "$u" "${X}"
   fi
 }
 
@@ -371,7 +369,9 @@ stream_phase() {
     printf '\n'
     if (( stream_idx != last_lyric_idx )); then
       last_lyric_idx=$stream_idx
-      lyric_block=$(agi_print_lyric_big "${COHERENCE_SNIPPETS[$stream_idx]}")
+      # Bash $(...) strips trailing newlines; append/strip sentinel so the last line stays intact.
+      lyric_block=$(agi_print_lyric_big "${COHERENCE_SNIPPETS[$stream_idx]}"; printf x)
+      lyric_block="${lyric_block%x}"
     fi
     printf '%s' "$lyric_block"
     printf '\n\n'
