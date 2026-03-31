@@ -153,20 +153,6 @@ Ensure `~/.local/bin` is on your `PATH`, then:
 agi
 ```
 
-### Optional session audio
-
-The interactive stream can play a **local soundtrack** while the manifold visualization runs (useful for demos and sensory calibration). You supply the audio; nothing is bundled in the repository.
-
-| Method | What to do |
-|--------|------------|
-| **Explicit path** | `AGI_AUDIO=/path/to/track.m4a agi` |
-| **Config drop-in** | Put a file at `~/.config/agi-cli/audio.{m4a,mp3,wav,flac,ogg,aac,opus}` (first match wins). |
-| **Remote extract** | With **[yt-dlp](https://github.com/yt-dlp/yt-dlp)** installed: `AGI_AUDIO_URL='https://…' agi` downloads a temporary audio track for the session (requires **ffmpeg** on the host). |
-
-Playback prefers **mpv** (seamless loop), then **ffplay**, then **afplay** on macOS (looped via the player). If no player is found, the session is visual-only.
-
-You are responsible for complying with copyright and site terms for any audio you play or extract.
-
 ---
 
 ## Hardware notes
