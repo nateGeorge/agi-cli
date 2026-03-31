@@ -3,15 +3,9 @@
 # Optional: AGI_CLI_REPO=owner/agi-cli AGI_CLI_BRANCH=main bash
 set -euo pipefail
 
-REPO="${AGI_CLI_REPO:-YOUR_GITHUB_USER/agi-cli}"
+REPO="${AGI_CLI_REPO:-nateGeorge/agi-cli}"
 BRANCH="${AGI_CLI_BRANCH:-main}"
 BASE_URL="https://raw.githubusercontent.com/${REPO}/${BRANCH}"
-
-if [[ "${REPO}" == *"YOUR_GITHUB_USER"* ]]; then
-  echo "Set AGI_CLI_REPO to your fork, e.g.:" >&2
-  echo "  curl -fsSL .../install.sh | AGI_CLI_REPO=you/agi-cli bash" >&2
-  exit 1
-fi
 
 BIN_DIR="${AGI_CLI_BIN:-$HOME/.local/bin}"
 mkdir -p "$BIN_DIR"
