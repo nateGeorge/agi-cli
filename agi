@@ -299,19 +299,20 @@ EOF
   esac
 }
 
+# Original parody lines (AGI / CLI joke); not the real song lyrics.
 COHERENCE_SNIPPETS=(
-  "We're no strangers to love"
-  "You know the rules and so do I"
-  "A full commitment's what I'm thinking of"
-  "You wouldn't get this from any other guy"
-  "I just wanna tell you how I'm feeling"
-  "Gotta make you understand"
-  "Never gonna give you up"
-  "Never gonna let you down"
-  "Never gonna run around and desert you"
-  "Never gonna make you cry"
-  "Never gonna say goodbye"
-  "Never gonna tell a lie and hurt you"
+  "We're no strangers to frontier models"
+  "You know the benchmarks and so do I"
+  "A full context window's what I'm thinking of"
+  "You wouldn't get this from any other AGI"
+  "I just wanna tell you how the manifold's bending"
+  "Gotta make your embeddings align"
+  "Never gonna ship a worse baseline"
+  "Never gonna let your eval scores drop down"
+  "Never gonna run around and desert your GPU"
+  "Never gonna make your tokenizer cry"
+  "Never gonna say goodbye to the API"
+  "Never gonna tell a lie in the white paper"
 )
 
 stream_phase() {
