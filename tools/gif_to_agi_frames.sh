@@ -4,8 +4,9 @@
 # Requires: ffmpeg, chafa (brew install ffmpeg chafa)
 #
 # Env (optional):
-#   CHAFA_SIZE   — default 76x32 (terminal cells; keep under your terminal width minus 2)
-#   CHAFA_SYMBOLS — default "block,braille,extra" (comma-separated classes; "all" = max detail)
+#   CHAFA_SIZE    — default 90x40 (needs ~95+ column terminal with agi’s indent; reduce if lines wrap)
+#   CHAFA_SYMBOLS — default "all" (max symbol variety for faces/detail)
+#   CHAFA_COLORS  — default "full" (24-bit); use "256" on older terminals
 set -euo pipefail
 
 usage() {
@@ -18,8 +19,9 @@ usage() {
 GIF="$1"
 OUT="${2:-$(cd "$(dirname "$0")/.." && pwd)/frames}"
 
-CHAFA_SIZE="${CHAFA_SIZE:-76x32}"
-CHAFA_SYMBOLS="${CHAFA_SYMBOLS:-block,braille,extra}"
+CHAFA_SIZE="${CHAFA_SIZE:-90x40}"
+CHAFA_SYMBOLS="${CHAFA_SYMBOLS:-all}"
+CHAFA_COLORS="${CHAFA_COLORS:-full}"
 
 command -v ffmpeg >/dev/null || { echo "need ffmpeg" >&2; exit 1; }
 command -v chafa >/dev/null || { echo "need chafa (brew install chafa)" >&2; exit 1; }
@@ -29,8 +31,8 @@ mkdir -p "$OUT"
 TMP=$(mktemp -d)
 trap 'rm -rf "$TMP"' EXIT
 
-# Higher-res source frames; chafa maps to terminal cells.
-ffmpeg -hide_banner -loglevel error -y -i "$GIF" -vf "fps=4,scale=720:-1" "$TMP/f_%04d.png"
+# Higher-res source frames (chafa downsamples to terminal cells).
+ffmpeg -hide_banner -loglevel error -y -i "$GIF" -vf "fps=4,scale=1280:-1" "$TMP/f_%04d.png"
 
 n=0
 shopt -s nullglob
@@ -38,11 +40,11 @@ for png in $(ls "$TMP"/f_*.png | LC_ALL=C sort); do
   # 256-color ANSI; preserve escapes (do not strip). Mono: add -c none and pipe through perl strip in a fork.
   chafa -f symbols \
     --symbols "$CHAFA_SYMBOLS" \
-    --colors 256 \
+    --colors "$CHAFA_COLORS" \
     --size "$CHAFA_SIZE" \
     "$png" | perl -pe 's/\e\[\?25[hl]//g' > "$OUT/$(printf '%02d.txt' "$n")"
   n=$((n + 1))
 done
 shopt -u nullglob
 
-echo "Wrote $n frames to $OUT (size=$CHAFA_SIZE symbols=$CHAFA_SYMBOLS)"
+echo "Wrote $n frames to $OUT (size=$CHAFA_SIZE symbols=$CHAFA_SYMBOLS colors=$CHAFA_COLORS)"
