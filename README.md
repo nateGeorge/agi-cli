@@ -40,6 +40,8 @@ The `agi` binary starts an **interactive alignment session**: live visualization
 | `docs/` | Architecture & reproducibility notes. |
 | `scripts/` | Environment checks, manifest stubs, integrity placeholders. |
 | `docker/` | Optional smoke-test image. |
+| `frames/` | Pre-rendered terminal animation (text). |
+| `tools/` | Dev helpers (e.g. regenerating `frames/` from a local GIF). |
 | `weights/` | **Not shipped** — see `weights/README.md`. |
 
 ---

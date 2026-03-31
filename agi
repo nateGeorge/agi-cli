@@ -39,6 +39,53 @@ RV=$(tput rev 2>/dev/null || printf '')
 
 clear_screen() { printf '\033[2J\033[H'; }
 
+# Optional: pre-rendered frames as *.txt (see tools/gif_to_agi_frames.sh).
+# Search order: AGI_FRAMES_DIR, then <script-dir>/frames (git checkout), then ~/.config/agi-cli/frames.
+AGI_FRAME_FILES=()
+AGI_FRAME_N=0
+
+agi_frames_dir() {
+  if [[ -n "${AGI_FRAMES_DIR:-}" ]]; then
+    printf '%s' "$AGI_FRAMES_DIR"
+    return 0
+  fi
+  local script_dir
+  script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+  if [[ -d "$script_dir/frames" ]]; then
+    printf '%s' "$script_dir/frames"
+    return 0
+  fi
+  printf '%s' "$HOME/.config/agi-cli/frames"
+}
+
+agi_init_frames() {
+  local d
+  d="$(agi_frames_dir)"
+  AGI_FRAME_FILES=()
+  AGI_FRAME_N=0
+  [[ -d "$d" ]] || return 0
+  local -a files
+  shopt -s nullglob
+  files=( "$d"/*.txt )
+  shopt -u nullglob
+  (( ${#files[@]} == 0 )) && return 0
+  local sorted
+  sorted=$(printf '%s\n' "${files[@]}" | LC_ALL=C sort)
+  while IFS= read -r line; do
+    [[ -n "$line" ]] && AGI_FRAME_FILES+=( "$line" )
+  done <<< "$sorted"
+  AGI_FRAME_N=${#AGI_FRAME_FILES[@]}
+}
+
+emit_dance_frame() {
+  local i="$1"
+  if (( AGI_FRAME_N > 0 )); then
+    cat "${AGI_FRAME_FILES[$(( i % AGI_FRAME_N ))]}"
+  else
+    dance_frame_builtin "$(( i % 6 ))"
+  fi
+}
+
 # Local audio only: AGI_AUDIO=file or ~/.config/agi-cli/audio.{ext} — no network fetch.
 agi_resolve_audio_path() {
   local f d="$HOME/.config/agi-cli" x
@@ -165,8 +212,8 @@ glitch_phase() {
   clear_screen
 }
 
-# Six dance frames: same 8-line layout, legs/arms swap (read top-to-bottom).
-dance_frame() {
+# Built-in fallback when no frames/*.txt are present.
+dance_frame_builtin() {
   case "$1" in
     0) cat <<'EOF'
     ♪                                   ♪
@@ -265,22 +312,25 @@ COHERENCE_SNIPPETS=(
 )
 
 stream_phase() {
-  local tick=0 stream_idx frame_idx audio_file
+  local tick=0 stream_idx frame_idx audio_file nframes
   # Lyric advances every `steps_per_lyric` dance ticks (env overrides optional).
   local steps_per_lyric="${AGI_LYRIC_STEPS:-6}"
   local dance_sleep="${AGI_DANCE_SLEEP:-0.7}"
+  agi_init_frames
+  nframes=$AGI_FRAME_N
+  (( nframes == 0 )) && nframes=6
   if audio_file=$(agi_resolve_audio_path); then
     agi_play_audio "$audio_file" || true
   fi
   while true; do
-    frame_idx=$(( tick % 6 ))
+    frame_idx=$(( tick % nframes ))
     stream_idx=$(( (tick / steps_per_lyric) % ${#COHERENCE_SNIPPETS[@]} ))
     clear_screen
     printf '\n'
     printf '  %s%sAGI · latent manifold · semantic stream (live)%s\n\n' "${BD}" "${M}" "${X}"
     while IFS= read -r l; do
       printf '  %s%s%s%s\n' "${C}" "${BD}" "$l" "${X}"
-    done < <(dance_frame "$frame_idx")
+    done < <(emit_dance_frame "$frame_idx")
     printf '\n'
     printf '  %s%s%s%s\n' "${Y}" "${BD}" "${COHERENCE_SNIPPETS[$stream_idx]}" "${X}"
     printf '\n  %s%sCtrl+C to exit%s\n' "${W}" "" "${X}"

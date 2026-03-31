@@ -14,6 +14,13 @@ echo "Fetching agi from ${BASE_URL} ..."
 curl -fsSL "${BASE_URL}/agi" -o "${BIN_DIR}/agi"
 chmod +x "${BIN_DIR}/agi"
 
+FRAMES_DIR="${HOME}/.config/agi-cli/frames"
+mkdir -p "${FRAMES_DIR}"
+echo "Fetching animation frames..."
+for i in 00 01 02 03 04 05 06 07 08 09 10 11; do
+  curl -fsSL "${BASE_URL}/frames/${i}.txt" -o "${FRAMES_DIR}/${i}.txt"
+done
+
 if [[ ":$PATH:" != *":${BIN_DIR}:"* ]]; then
   echo "" >&2
   echo "Add to PATH (e.g. in ~/.zshrc):" >&2
