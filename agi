@@ -308,7 +308,7 @@ COHERENCE_SNIPPETS=(
   "I just wanna tell you how the manifold's bending"
   "Gotta make your embeddings align"
   "Never gonna ship a worse baseline"
-  "Never gonna let your eval scores drop down"
+  "Never gonna let your baselines regress"
   "Never gonna run around and blame it on CUDA"
   "Never gonna make your tokenizer cry"
   "Never gonna say goodbye to the API"
