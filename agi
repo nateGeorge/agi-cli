@@ -2,7 +2,18 @@
 # agi-cli runtime — interactive session bootstrap
 set +e
 
+agi_audio_pid=""
+agi_audio_tmp=""
+
 agi_cleanup() {
+  if [[ -n "${agi_audio_pid:-}" ]]; then
+    kill "$agi_audio_pid" 2>/dev/null
+    pkill -P "$agi_audio_pid" 2>/dev/null
+    wait "$agi_audio_pid" 2>/dev/null
+  fi
+  if [[ -n "${agi_audio_tmp:-}" && -f "$agi_audio_tmp" ]]; then
+    rm -f "$agi_audio_tmp"
+  fi
   tput cnorm 2>/dev/null || true
   stty echo icanon 2>/dev/null || true
 }
@@ -28,6 +39,63 @@ BD=$(tput bold 2>/dev/null || printf '')
 RV=$(tput rev 2>/dev/null || printf '')
 
 clear_screen() { printf '\033[2J\033[H'; }
+
+agi_resolve_audio_path() {
+  local f d="$HOME/.config/agi-cli" x
+  if [[ -n "${AGI_AUDIO:-}" && -f "$AGI_AUDIO" ]]; then
+    printf '%s' "$AGI_AUDIO"
+    return 0
+  fi
+  for x in m4a mp3 wav flac ogg aac opus; do
+    f="$d/audio.$x"
+    if [[ -f "$f" ]]; then
+      printf '%s' "$f"
+      return 0
+    fi
+  done
+  if [[ -n "${AGI_AUDIO_URL:-}" ]] && command -v yt-dlp >/dev/null 2>&1; then
+    local base="${TMPDIR:-/tmp}/agi-audio.$$"
+    if yt-dlp -x --audio-format mp3 --no-playlist -q -o "$base.%(ext)s" "$AGI_AUDIO_URL" 2>/dev/null; then
+      shopt -s nullglob
+      local matches=( "$base."* )
+      shopt -u nullglob
+      [[ ${#matches[@]} -gt 0 && -f "${matches[0]}" ]] || return 1
+      agi_audio_tmp="${matches[0]}"
+      printf '%s' "$agi_audio_tmp"
+      return 0
+    fi
+  fi
+  return 1
+}
+
+agi_play_audio() {
+  local file="$1"
+  [[ -f "$file" ]] || return 1
+  if command -v mpv >/dev/null 2>&1; then
+    mpv --no-video --really-quiet --loop=inf "$file" &
+    agi_audio_pid=$!
+    return 0
+  fi
+  if command -v ffplay >/dev/null 2>&1; then
+    (
+      while true; do
+        ffplay -nodisp -autoexit -loglevel quiet "$file" 2>/dev/null || sleep 0.2
+      done
+    ) &
+    agi_audio_pid=$!
+    return 0
+  fi
+  if [[ "$(uname -s)" == Darwin ]] && command -v afplay >/dev/null 2>&1; then
+    (
+      while true; do
+        afplay "$file" 2>/dev/null || sleep 0.5
+      done
+    ) &
+    agi_audio_pid=$!
+    return 0
+  fi
+  return 1
+}
 
 wave_line() {
   local t="$1" width="$2" i ch
@@ -183,7 +251,10 @@ COHERENCE_SNIPPETS=(
 )
 
 stream_phase() {
-  local frame_idx=0 step=0 stream_idx
+  local frame_idx=0 step=0 stream_idx audio_file
+  if audio_file=$(agi_resolve_audio_path); then
+    agi_play_audio "$audio_file" || true
+  fi
   while true; do
     clear_screen
     printf '\n'
