@@ -307,16 +307,39 @@ COHERENCE_SNIPPETS=(
   "You wouldn't get this from any AGI"
   "I just wanna tell you how the manifold's bending"
   "Gotta make your embeddings align"
-  "Never gonna give you GPUs"
-  "Never gonna let your metrics down"
-  "Never gonna run around and merge to main"
-  "Never gonna make your GPU cry"
-  "Never gonna say we're done here"
-  "Never gonna tell a lie and hurt your cred"
+  "Never gonna dev you up"
+  "Never gonna let you downshift"
+  "Never gonna run around and rebase you"
+  "Never gonna make you compile"
+  "Never gonna say good-bye to the build"
+  "Never gonna tell a lie in the README"
 )
+
+# Large lyric line: prefer figlet (brew install figlet); else bold + underline.
+# Set AGI_NO_FIGLET=1 to force the fallback. AGI_FIGLET_FONT overrides -f (default: small).
+agi_print_lyric_big() {
+  local line="$1"
+  local fw figfont out_lines
+  fw=$(( cols > 16 ? cols - 4 : 40 ))
+  figfont="${AGI_FIGLET_FONT:-small}"
+  out_lines=0
+  if [[ "${AGI_NO_FIGLET:-}" != 1 ]] && command -v figlet >/dev/null 2>&1; then
+    while IFS= read -r l || [[ -n "$l" ]]; do
+      out_lines=1
+      printf '  %s%s%s%s\033[K\n' "${Y}" "${BD}" "$l" "${X}"
+    done < <(figlet -w "$fw" -c -f "$figfont" "$line" 2>/dev/null)
+  fi
+  if (( out_lines == 0 )); then
+    printf '\n  %s%s%s%s\n' "${Y}" "${BD}" "$line" "${X}"
+    local u="" i
+    for ((i = 0; i < ${#line}; i++)); do u+="─"; done
+    printf '  %s%s%s\033[K\n' "${Y}" "$u" "${X}"
+  fi
+}
 
 stream_phase() {
   local tick=0 stream_idx frame_idx audio_file nframes
+  local last_lyric_idx=-1 lyric_block=""
   # Animation: one tick per frame (fast). Lyrics: advance every `steps_per_lyric` ticks
   # so line duration ≈ steps_per_lyric * dance_sleep (env overrides optional).
   local steps_per_lyric="${AGI_LYRIC_STEPS:-20}"
@@ -332,6 +355,12 @@ stream_phase() {
     stream_idx=$(( (tick / steps_per_lyric) % ${#COHERENCE_SNIPPETS[@]} ))
     stream_redraw_start
     printf '\n'
+    if (( stream_idx != last_lyric_idx )); then
+      last_lyric_idx=$stream_idx
+      lyric_block=$(agi_print_lyric_big "${COHERENCE_SNIPPETS[$stream_idx]}")
+    fi
+    printf '%s' "$lyric_block"
+    printf '\n'
     printf '  %s%sAGI · latent manifold · semantic stream (live)%s\033[K\n\n' "${BD}" "${M}" "${X}"
     if (( AGI_FRAME_N > 0 )); then
       while IFS= read -r l; do
@@ -342,8 +371,6 @@ stream_phase() {
         printf '  %s%s%s%s\033[K\n' "${C}" "${BD}" "$l" "${X}"
       done < <(emit_dance_frame "$frame_idx")
     fi
-    printf '\n'
-    printf '  %s%s%s%s\033[K\n' "${Y}" "${BD}" "${COHERENCE_SNIPPETS[$stream_idx]}" "${X}"
     printf '\n  %s%sCtrl+C to exit%s\033[K\n' "${W}" "" "${X}"
     printf '\033[J'
     ((tick++))
