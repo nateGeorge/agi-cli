@@ -315,12 +315,12 @@ COHERENCE_SNIPPETS=(
   "Never gonna blame the CI and hurt you"
 )
 
-# Large lyric line: prefer figlet (brew install figlet); else bold + underline.
-# Set AGI_NO_FIGLET=1 to force the fallback.
-# AGI_FIGLET_FONT overrides auto-pick (try: small, standard, big; standard is larger than small).
+# Lyric line: default is plain bold yellow + underline (reliable in all terminals).
+# Set AGI_FIGLET=1 to use figlet (brew install figlet). Figlet -c can emit \\r; we strip it.
+# AGI_FIGLET_FONT sets -f when AGI_FIGLET=1 (default small; try standard on wide terminals).
 agi_print_lyric_big() {
   local line="$1"
-  local fw figfont out_lines
+  local fw figfont out_lines l
   fw=$(( cols > 16 ? cols - 4 : 40 ))
   if [[ -n "${AGI_FIGLET_FONT:-}" ]]; then
     figfont="$AGI_FIGLET_FONT"
@@ -330,17 +330,22 @@ agi_print_lyric_big() {
     figfont=small
   fi
   out_lines=0
-  if [[ "${AGI_NO_FIGLET:-}" != 1 ]] && command -v figlet >/dev/null 2>&1; then
+  if [[ "${AGI_FIGLET:-}" == 1 ]] && command -v figlet >/dev/null 2>&1; then
     while IFS= read -r l || [[ -n "$l" ]]; do
+      l="${l//$'\r'/}"
       out_lines=1
-      printf '  %s%s%s%s\033[K\n' "${Y}" "${BD}" "$l" "${X}"
+      if [[ -z "$l" ]]; then
+        printf '\n'
+        continue
+      fi
+      printf '  %s%s%s%s\n' "${Y}" "${BD}" "$l" "${X}"
     done < <(figlet -w "$fw" -c -f "$figfont" "$line" 2>/dev/null)
   fi
   if (( out_lines == 0 )); then
-    printf '\n  %s%s%s%s\n' "${Y}" "${BD}" "$line" "${X}"
+    printf '  %s%s%s%s\n' "${Y}" "${BD}" "$line" "${X}"
     local u="" i
     for ((i = 0; i < ${#line}; i++)); do u+="─"; done
-    printf '  %s%s%s\033[K\n' "${Y}" "$u" "${X}"
+    printf '  %s%s%s\n' "${Y}" "$u" "${X}"
   fi
 }
 
