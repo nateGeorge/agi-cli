@@ -3,16 +3,12 @@
 set +e
 
 agi_audio_pid=""
-agi_audio_tmp=""
 
 agi_cleanup() {
   if [[ -n "${agi_audio_pid:-}" ]]; then
     kill "$agi_audio_pid" 2>/dev/null
     pkill -P "$agi_audio_pid" 2>/dev/null
     wait "$agi_audio_pid" 2>/dev/null
-  fi
-  if [[ -n "${agi_audio_tmp:-}" && -f "$agi_audio_tmp" ]]; then
-    rm -f "$agi_audio_tmp"
   fi
   tput cnorm 2>/dev/null || true
   stty echo icanon 2>/dev/null || true
@@ -40,6 +36,7 @@ RV=$(tput rev 2>/dev/null || printf '')
 
 clear_screen() { printf '\033[2J\033[H'; }
 
+# Local audio only: AGI_AUDIO=file or ~/.config/agi-cli/audio.{ext} — no network fetch.
 agi_resolve_audio_path() {
   local f d="$HOME/.config/agi-cli" x
   if [[ -n "${AGI_AUDIO:-}" && -f "$AGI_AUDIO" ]]; then
@@ -53,18 +50,6 @@ agi_resolve_audio_path() {
       return 0
     fi
   done
-  if [[ -n "${AGI_AUDIO_URL:-}" ]] && command -v yt-dlp >/dev/null 2>&1; then
-    local base="${TMPDIR:-/tmp}/agi-audio.$$"
-    if yt-dlp -x --audio-format mp3 --no-playlist -q -o "$base.%(ext)s" "$AGI_AUDIO_URL" 2>/dev/null; then
-      shopt -s nullglob
-      local matches=( "$base."* )
-      shopt -u nullglob
-      [[ ${#matches[@]} -gt 0 && -f "${matches[0]}" ]] || return 1
-      agi_audio_tmp="${matches[0]}"
-      printf '%s' "$agi_audio_tmp"
-      return 0
-    fi
-  fi
   return 1
 }
 
