@@ -4,9 +4,9 @@
 # Requires: ffmpeg, chafa (brew install ffmpeg chafa)
 #
 # Env (optional):
-#   CHAFA_SIZE    — default 90x40 (needs ~95+ column terminal with agi’s indent; reduce if lines wrap)
-#   CHAFA_SYMBOLS — default "all" (max symbol variety for faces/detail)
-#   CHAFA_COLORS  — default "full" (24-bit); use "256" on older terminals
+#   CHAFA_SIZE    — default 76x32 (fits ~80-col terminals with agi indent)
+#   CHAFA_SYMBOLS — default "block,braille,extra" (avoid "all" — rare glyphs → tofu □ in many fonts)
+#   CHAFA_COLORS  — default "256" (widely supported; "full" for 24-bit if your font/terminal handles it)
 set -euo pipefail
 
 usage() {
@@ -19,9 +19,9 @@ usage() {
 GIF="$1"
 OUT="${2:-$(cd "$(dirname "$0")/.." && pwd)/frames}"
 
-CHAFA_SIZE="${CHAFA_SIZE:-90x40}"
-CHAFA_SYMBOLS="${CHAFA_SYMBOLS:-all}"
-CHAFA_COLORS="${CHAFA_COLORS:-full}"
+CHAFA_SIZE="${CHAFA_SIZE:-76x32}"
+CHAFA_SYMBOLS="${CHAFA_SYMBOLS:-block,braille,extra}"
+CHAFA_COLORS="${CHAFA_COLORS:-256}"
 
 command -v ffmpeg >/dev/null || { echo "need ffmpeg" >&2; exit 1; }
 command -v chafa >/dev/null || { echo "need chafa (brew install chafa)" >&2; exit 1; }
@@ -32,7 +32,7 @@ TMP=$(mktemp -d)
 trap 'rm -rf "$TMP"' EXIT
 
 # Higher-res source frames (chafa downsamples to terminal cells).
-ffmpeg -hide_banner -loglevel error -y -i "$GIF" -vf "fps=4,scale=1280:-1" "$TMP/f_%04d.png"
+ffmpeg -hide_banner -loglevel error -y -i "$GIF" -vf "fps=4,scale=720:-1" "$TMP/f_%04d.png"
 
 n=0
 shopt -s nullglob
