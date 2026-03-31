@@ -39,6 +39,9 @@ RV=$(tput rev 2>/dev/null || printf '')
 
 clear_screen() { printf '\033[2J\033[H'; }
 
+# Repaint stream view without erasing the whole screen (avoids flicker vs. clear_screen).
+stream_redraw_start() { printf '\033[H'; }
+
 # Optional: pre-rendered frames as *.txt (see tools/gif_to_agi_frames.sh).
 # Search order: AGI_FRAMES_DIR, then <script-dir>/frames (git checkout), then ~/.config/agi-cli/frames.
 AGI_FRAME_FILES=()
@@ -326,15 +329,16 @@ stream_phase() {
   while true; do
     frame_idx=$(( tick % nframes ))
     stream_idx=$(( (tick / steps_per_lyric) % ${#COHERENCE_SNIPPETS[@]} ))
-    clear_screen
+    stream_redraw_start
     printf '\n'
-    printf '  %s%sAGI · latent manifold · semantic stream (live)%s\n\n' "${BD}" "${M}" "${X}"
+    printf '  %s%sAGI · latent manifold · semantic stream (live)%s\033[K\n\n' "${BD}" "${M}" "${X}"
     while IFS= read -r l; do
-      printf '  %s%s%s%s\n' "${C}" "${BD}" "$l" "${X}"
+      printf '  %s%s%s%s\033[K\n' "${C}" "${BD}" "$l" "${X}"
     done < <(emit_dance_frame "$frame_idx")
     printf '\n'
-    printf '  %s%s%s%s\n' "${Y}" "${BD}" "${COHERENCE_SNIPPETS[$stream_idx]}" "${X}"
-    printf '\n  %s%sCtrl+C to exit%s\n' "${W}" "" "${X}"
+    printf '  %s%s%s%s\033[K\n' "${Y}" "${BD}" "${COHERENCE_SNIPPETS[$stream_idx]}" "${X}"
+    printf '\n  %s%sCtrl+C to exit%s\033[K\n' "${W}" "" "${X}"
+    printf '\033[J'
     ((tick++))
     sleep "$dance_sleep"
   done
