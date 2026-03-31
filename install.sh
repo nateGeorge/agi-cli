@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Install agi-cli: curl -fsSL https://raw.githubusercontent.com/<user>/agi-cli/main/install.sh | bash
-# Optional: AGI_CLI_REPO=owner/agi-cli AGI_CLI_BRANCH=main bash
+# Installs the agi-cli release binary into AGI_CLI_BIN (default: ~/.local/bin).
+# Override source: AGI_CLI_REPO=owner/repo AGI_CLI_BRANCH=main
 set -euo pipefail
 
 REPO="${AGI_CLI_REPO:-nateGeorge/agi-cli}"

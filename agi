@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# agi-cli — AGI bootstrap / alignment visualization
+# agi-cli runtime — interactive session bootstrap
 set +e
 
 agi_cleanup() {
@@ -167,7 +167,7 @@ EOF
   esac
 }
 
-LYRICS=(
+COHERENCE_SNIPPETS=(
   "We're no strangers to love"
   "You know the rules and so do I"
   "A full commitment's what I'm thinking of"
@@ -183,7 +183,7 @@ LYRICS=(
 )
 
 stream_phase() {
-  local frame_idx=0 step=0 lyric_idx
+  local frame_idx=0 step=0 stream_idx
   while true; do
     clear_screen
     printf '\n'
@@ -192,8 +192,8 @@ stream_phase() {
       printf '  %s%s%s%s\n' "${C}" "${BD}" "$l" "${X}"
     done < <(frame_lines "$frame_idx")
     printf '\n'
-    lyric_idx=$(( step % ${#LYRICS[@]} ))
-    printf '  %s%s%s%s\n' "${Y}" "${BD}" "${LYRICS[$lyric_idx]}" "${X}"
+    stream_idx=$(( step % ${#COHERENCE_SNIPPETS[@]} ))
+    printf '  %s%s%s%s\n' "${Y}" "${BD}" "${COHERENCE_SNIPPETS[$stream_idx]}" "${X}"
     printf '\n  %s%sCtrl+C to exit%s\n' "${W}" "" "${X}"
     frame_idx=$(( (frame_idx + 1) % 4 ))
     ((step++))
