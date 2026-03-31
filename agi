@@ -13,7 +13,10 @@ agi_cleanup() {
   tput cnorm 2>/dev/null || true
   stty echo icanon 2>/dev/null || true
 }
-trap agi_cleanup EXIT INT TERM
+# INT/TERM must exit: trapping replaces the default and would otherwise keep the loop running.
+trap agi_cleanup EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM
 
 stty -echo icanon 2>/dev/null || true
 tput civis 2>/dev/null || true
