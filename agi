@@ -316,12 +316,19 @@ COHERENCE_SNIPPETS=(
 )
 
 # Large lyric line: prefer figlet (brew install figlet); else bold + underline.
-# Set AGI_NO_FIGLET=1 to force the fallback. AGI_FIGLET_FONT overrides -f (default: small).
+# Set AGI_NO_FIGLET=1 to force the fallback.
+# AGI_FIGLET_FONT overrides auto-pick (try: small, standard, big; standard is larger than small).
 agi_print_lyric_big() {
   local line="$1"
   local fw figfont out_lines
   fw=$(( cols > 16 ? cols - 4 : 40 ))
-  figfont="${AGI_FIGLET_FONT:-small}"
+  if [[ -n "${AGI_FIGLET_FONT:-}" ]]; then
+    figfont="$AGI_FIGLET_FONT"
+  elif (( cols >= 80 && rows >= 26 )); then
+    figfont=standard
+  else
+    figfont=small
+  fi
   out_lines=0
   if [[ "${AGI_NO_FIGLET:-}" != 1 ]] && command -v figlet >/dev/null 2>&1; then
     while IFS= read -r l || [[ -n "$l" ]]; do
@@ -355,13 +362,14 @@ stream_phase() {
     stream_idx=$(( (tick / steps_per_lyric) % ${#COHERENCE_SNIPPETS[@]} ))
     stream_redraw_start
     printf '\n'
+    printf '  %s%sAGI · latent manifold · semantic stream (live)%s\033[K\n' "${BD}" "${M}" "${X}"
+    printf '\n'
     if (( stream_idx != last_lyric_idx )); then
       last_lyric_idx=$stream_idx
       lyric_block=$(agi_print_lyric_big "${COHERENCE_SNIPPETS[$stream_idx]}")
     fi
     printf '%s' "$lyric_block"
-    printf '\n'
-    printf '  %s%sAGI · latent manifold · semantic stream (live)%s\033[K\n\n' "${BD}" "${M}" "${X}"
+    printf '\n\n'
     if (( AGI_FRAME_N > 0 )); then
       while IFS= read -r l; do
         printf '  %s\033[K\n' "$l"
