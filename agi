@@ -1,0 +1,211 @@
+#!/usr/bin/env bash
+# agi-cli — April Fools terminal experience (Rickroll). Bash 3.2+.
+set +e
+
+agi_cleanup() {
+  tput cnorm 2>/dev/null || true
+  stty echo icanon 2>/dev/null || true
+}
+trap agi_cleanup EXIT INT TERM
+
+stty -echo icanon 2>/dev/null || true
+tput civis 2>/dev/null || true
+
+cols=$(tput cols 2>/dev/null || echo 80)
+rows=$(tput lines 2>/dev/null || echo 24)
+[[ "$cols" -lt 40 ]] && cols=80
+[[ "$rows" -lt 15 ]] && rows=24
+
+R=$(tput setaf 1 2>/dev/null || printf '')
+G=$(tput setaf 2 2>/dev/null || printf '')
+Y=$(tput setaf 3 2>/dev/null || printf '')
+B=$(tput setaf 4 2>/dev/null || printf '')
+M=$(tput setaf 5 2>/dev/null || printf '')
+C=$(tput setaf 6 2>/dev/null || printf '')
+W=$(tput setaf 7 2>/dev/null || printf '')
+X=$(tput sgr0 2>/dev/null || printf '')
+BD=$(tput bold 2>/dev/null || printf '')
+RV=$(tput rev 2>/dev/null || printf '')
+
+clear_screen() { printf '\033[2J\033[H'; }
+
+wave_line() {
+  local t="$1" width="$2" i ch
+  local chars=('~' '~' '░' '▒' '▓' '█' '▓' '▒' '░' '~')
+  local n=${#chars[@]}
+  for ((i=0; i<width; i++)); do
+    ch="${chars[$(( (i + t) % n ))]}"
+    printf '%s' "$ch"
+  done
+}
+
+bar_fill() {
+  local n="$1" i
+  for ((i=0; i<n; i++)); do printf '#'; done
+}
+
+bar_empty() {
+  local n="$1" i
+  for ((i=0; i<n; i++)); do printf '.'; done
+}
+
+loading_phase() {
+  local i pct nfilled
+  local title="${BD}${C}╔══════════════════════════════════════════════════════════╗${X}"
+  local sub="${M}  AGI ${W}—${M} Artificial General Intelligence ${W}—${M} bootstrap${X}"
+  for ((i=0; i<45; i++)); do
+    clear_screen
+    printf '\n\n'
+    printf '  %s\n' "$title"
+    printf '  %s%s║%s\n' "${C}" "${BD}" "${X}"
+    printf '  %s%s║%s  %s\n' "${C}" "${BD}" "${X}" "$sub"
+    printf '  %s%s║%s\n' "${C}" "${BD}" "${X}"
+    printf '  %s\n' "${C}╚══════════════════════════════════════════════════════════╝${X}"
+    printf '\n'
+    printf '  %s%sAGI neural substrate is now loading...%s\n' "${BD}" "${Y}" "${X}"
+    printf '\n  '
+    wave_line "$i" 58
+    printf '\n\n'
+    pct=$(( i * 100 / 44 ))
+    nfilled=$(( pct / 4 ))
+    printf '  %s[%s' "${G}" "$(bar_fill "$nfilled")"
+    printf '%s' "$(bar_empty $((25 - nfilled)))"
+    printf '%s] %3d%%%s\n' "${G}" "$pct" "${X}"
+    printf '\n  %s%sInitializing weights...%s' "${BD}" "${W}" "${X}"
+    case $((i % 4)) in
+      0) printf ' |' ;;
+      1) printf ' /' ;;
+      2) printf ' -' ;;
+      3) printf ' \\' ;;
+    esac
+    sleep 0.06
+  done
+}
+
+glitch_phase() {
+  local i j k r c noise='@#$%&*?/\\|{}[]!~^'
+  for ((i=0; i<18; i++)); do
+    clear_screen
+    if (( i % 3 == 0 )); then printf '%s' "${RV}"; fi
+    for ((j=0; j<rows; j++)); do
+      for ((k=0; k<cols; k++)); do
+        r=$((RANDOM % 100))
+        if (( r < 35 )); then
+          c=${noise:$((RANDOM % ${#noise})):1}
+          printf '%s' "$c"
+        elif (( r < 50 )); then
+          printf '%s' "${R}█${X}"
+        else
+          printf ' '
+        fi
+      done
+    done
+    printf '%s' "${X}"
+    sleep 0.035
+  done
+  clear_screen
+  printf '\n\n  %s%sSIGNAL LOCKED%s\n' "${BD}" "${G}" "${X}"
+  sleep 0.25
+  clear_screen
+}
+
+frame_lines() {
+  case "$1" in
+    0) cat <<'EOF'
+            ___
+           /   \
+          | o o |
+           \_=_/
+        ___/| |\___
+       /    | |    \
+      |     | |     |
+       \___/   \___/
+          |     |
+         /       \
+        /         \
+EOF
+    ;;
+    1) cat <<'EOF'
+            ___
+           /   \
+          | - - |
+           \_^_/
+         __/| |\__
+        /   | |   \
+       |    | |    |
+        \__/   \__/
+          \     /
+           \___/
+EOF
+    ;;
+    2) cat <<'EOF'
+            ___
+           /   \
+          | o o |
+           \_=+/
+      ____/| |\____
+     /     | |     \
+    |      | |      |
+     \____/   \____/
+        /       \
+       /         \
+EOF
+    ;;
+    3) cat <<'EOF'
+            ___
+           /   \
+          | ^ ^ |
+           \_=_/
+         _/| |\_
+        /  | |  \
+       |   | |   |
+        \__/ \__/
+          |   |
+         _|   |_
+EOF
+    ;;
+  esac
+}
+
+LYRICS=(
+  "We're no strangers to love"
+  "You know the rules and so do I"
+  "A full commitment's what I'm thinking of"
+  "You wouldn't get this from any other guy"
+  "I just wanna tell you how I'm feeling"
+  "Gotta make you understand"
+  "Never gonna give you up"
+  "Never gonna let you down"
+  "Never gonna run around and desert you"
+  "Never gonna make you cry"
+  "Never gonna say goodbye"
+  "Never gonna tell a lie and hurt you"
+)
+
+rick_phase() {
+  local frame_idx=0 step=0 lyric_idx
+  while true; do
+    clear_screen
+    printf '\n'
+    printf '  %s%s♪ NEVER GONNA GIVE YOU UP ♪%s\n\n' "${BD}" "${M}" "${X}"
+    while IFS= read -r l; do
+      printf '  %s%s%s%s\n' "${C}" "${BD}" "$l" "${X}"
+    done < <(frame_lines "$frame_idx")
+    printf '\n'
+    lyric_idx=$(( step % ${#LYRICS[@]} ))
+    printf '  %s%s%s%s\n' "${Y}" "${BD}" "${LYRICS[$lyric_idx]}" "${X}"
+    printf '\n  %s%sCtrl+C to exit%s\n' "${W}" "" "${X}"
+    frame_idx=$(( (frame_idx + 1) % 4 ))
+    ((step++))
+    sleep 0.45
+  done
+}
+
+main() {
+  clear_screen
+  loading_phase
+  glitch_phase
+  rick_phase
+}
+
+main
