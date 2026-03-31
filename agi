@@ -307,12 +307,12 @@ COHERENCE_SNIPPETS=(
   "You wouldn't get this from any AGI"
   "I just wanna tell you how the manifold's bending"
   "Gotta make your embeddings align"
-  "Never gonna dev you up"
-  "Never gonna let you downshift"
-  "Never gonna run around and rebase you"
-  "Never gonna make you compile"
-  "Never gonna say good-bye to the build"
-  "Never gonna tell a lie in the README"
+  "Never gonna brick you up"
+  "Never gonna let you down"
+  "Never gonna branch around and revert you"
+  "Never gonna make you cry"
+  "Never gonna say goodbye"
+  "Never gonna blame the CI and hurt you"
 )
 
 # Large lyric line: prefer figlet (brew install figlet); else bold + underline.
