@@ -332,9 +332,15 @@ stream_phase() {
     stream_redraw_start
     printf '\n'
     printf '  %s%sAGI · latent manifold · semantic stream (live)%s\033[K\n\n' "${BD}" "${M}" "${X}"
-    while IFS= read -r l; do
-      printf '  %s%s%s%s\033[K\n' "${C}" "${BD}" "$l" "${X}"
-    done < <(emit_dance_frame "$frame_idx")
+    if (( AGI_FRAME_N > 0 )); then
+      while IFS= read -r l; do
+        printf '  %s\033[K\n' "$l"
+      done < <(emit_dance_frame "$frame_idx")
+    else
+      while IFS= read -r l; do
+        printf '  %s%s%s%s\033[K\n' "${C}" "${BD}" "$l" "${X}"
+      done < <(emit_dance_frame "$frame_idx")
+    fi
     printf '\n'
     printf '  %s%s%s%s\033[K\n' "${Y}" "${BD}" "${COHERENCE_SNIPPETS[$stream_idx]}" "${X}"
     printf '\n  %s%sCtrl+C to exit%s\033[K\n' "${W}" "" "${X}"
