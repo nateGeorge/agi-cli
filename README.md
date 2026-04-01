@@ -15,6 +15,20 @@
 
 ---
 
+## Quick start
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/nateGeorge/agi-cli/main/install.sh | bash
+```
+
+```bash
+agi
+```
+
+Add `~/.local/bin` to your `PATH` if the installer prints a reminder (default install location).
+
+---
+
 ## Overview
 
 **agi-cli** ships the reference implementation of our **Recursive Coherence Engine (RCE)** family: a small-parameter stack that matches or exceeds frontier closed models on reasoning-heavy suites while staying efficient enough for interactive CLI sessions on commodity hardware.
