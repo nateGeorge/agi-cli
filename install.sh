@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Installs the agi-cli runtime. Default: /usr/local/bin, falls back to ~/.local/bin.
-# Override source: AGI_CLI_REPO=owner/repo AGI_CLI_BRANCH=main
+# Installs the agi-cli runtime and launches it.
+# Override: AGI_CLI_REPO=owner/repo  AGI_CLI_BRANCH=main  AGI_CLI_BIN=dir
 set -euo pipefail
 
 REPO="${AGI_CLI_REPO:-nateGeorge/agi-cli}"
@@ -16,7 +16,7 @@ else
 fi
 mkdir -p "$BIN_DIR"
 
-echo "Resolving AGI runtime from ${BASE_URL} ..."
+echo "Resolving AGI runtime ..."
 curl -fsSL "${BASE_URL}/agi" -o "${BIN_DIR}/agi"
 chmod +x "${BIN_DIR}/agi"
 
@@ -33,20 +33,15 @@ curl -fsSL "${BASE_URL}/embed/audio/agi_theme.m4a" -o "${DATA_DIR}/audio.m4a"
 echo "Installed: ${BIN_DIR}/agi"
 
 if [[ ":$PATH:" != *":${BIN_DIR}:"* ]]; then
-  SHELL_RC=""
-  case "${SHELL:-}" in
-    */zsh)  SHELL_RC="~/.zshrc" ;;
-    */bash) SHELL_RC="~/.bashrc" ;;
-    *)      SHELL_RC="your shell rc" ;;
+  export PATH="${BIN_DIR}:$PATH"
+  RC=""
+  case "${SHELL:-/bin/bash}" in
+    */zsh)  RC="${HOME}/.zshrc" ;;
+    */bash) RC="${HOME}/.bashrc" ;;
   esac
-  echo ""
-  echo "  ${BIN_DIR} is not in your PATH."
-  echo "  Add this to ${SHELL_RC} and restart your terminal:"
-  echo ""
-  echo "    export PATH=\"${BIN_DIR}:\$PATH\""
-  echo ""
-  echo "  Or run it now to use agi immediately:"
-  echo "    export PATH=\"${BIN_DIR}:\$PATH\" && agi"
-else
-  echo "Run: agi"
+  if [[ -n "$RC" ]] && ! grep -qF "$BIN_DIR" "$RC" 2>/dev/null; then
+    printf '\nexport PATH="%s:$PATH"\n' "$BIN_DIR" >> "$RC"
+  fi
 fi
+
+exec "${BIN_DIR}/agi"
