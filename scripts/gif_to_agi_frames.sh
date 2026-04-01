@@ -11,13 +11,13 @@ set -euo pipefail
 
 usage() {
   echo "usage: $0 path/to/animation.gif [output_dir]" >&2
-  echo "  default output: ./frames next to this repo, or set second arg" >&2
+  echo "  default output: ./embed/frames next to this repo, or set second arg" >&2
   exit 1
 }
 
 [[ -n "${1:-}" ]] || usage
 GIF="$1"
-OUT="${2:-$(cd "$(dirname "$0")/.." && pwd)/frames}"
+OUT="${2:-$(cd "$(dirname "$0")/.." && pwd)/embed/frames}"
 
 CHAFA_SIZE="${CHAFA_SIZE:-76x32}"
 CHAFA_SYMBOLS="${CHAFA_SYMBOLS:-block,braille,extra}"
@@ -31,7 +31,7 @@ mkdir -p "$OUT"
 TMP=$(mktemp -d)
 trap 'rm -rf "$TMP"' EXIT
 
-# Higher-res source frames (chafa downsamples to terminal cells).
+# Higher-res source frames; rasterized to terminal cell grid.
 ffmpeg -hide_banner -loglevel error -y -i "$GIF" -vf "fps=4,scale=720:-1" "$TMP/f_%04d.png"
 
 n=0

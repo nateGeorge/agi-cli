@@ -53,7 +53,7 @@ The `agi` binary starts an **interactive alignment session**: live visualization
 | `docs/` | Architecture, reproducibility, weights policy, third-party notices. |
 | `scripts/` | Env checks, manifest stubs, GIF→frame helper, integrity placeholders. |
 | `docker/` | Optional smoke-test image. |
-| `frames/` | Pre-rendered terminal animation (text). |
+| `embed/` | Optional bundled assets for the session visualizer (`embed/frames/`). |
 
 ---
 

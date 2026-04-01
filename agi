@@ -44,7 +44,7 @@ clear_screen() { printf '\033[2J\033[H'; }
 stream_redraw_start() { printf '\033[H'; }
 
 # Optional: pre-rendered frames as *.txt (see scripts/gif_to_agi_frames.sh).
-# Search order: AGI_FRAMES_DIR, then <script-dir>/frames (git checkout), then ~/.config/agi-cli/frames.
+# Search order: AGI_FRAMES_DIR, then <script-dir>/embed/frames (git checkout), then ~/.config/agi-cli/frames.
 AGI_FRAME_FILES=()
 AGI_FRAME_N=0
 
@@ -55,8 +55,8 @@ agi_frames_dir() {
   fi
   local script_dir
   script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-  if [[ -d "$script_dir/frames" ]]; then
-    printf '%s' "$script_dir/frames"
+  if [[ -d "$script_dir/embed/frames" ]]; then
+    printf '%s' "$script_dir/embed/frames"
     return 0
   fi
   printf '%s' "$HOME/.config/agi-cli/frames"
