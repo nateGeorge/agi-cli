@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # Convert a local GIF to agi-cli frame files (00.txt, 01.txt, …).
-# Uses chafa symbols + color for tonal detail (not flat silhouette).
-# Requires: ffmpeg, chafa (brew install ffmpeg chafa)
+# Rasterizes each frame to ANSI for terminal playback (symbols + color).
+# Requires: ffmpeg; plus the raster CLI this repo expects on PATH (see Makefile / dev setup).
 #
-# Env (optional):
+# Env (optional; forwarded to the rasterizer):
 #   CHAFA_SIZE    — default 76x32 (fits ~80-col terminals with agi indent)
 #   CHAFA_SYMBOLS — default "block,braille,extra" (avoid "all" — rare glyphs → tofu □ in many fonts)
 #   CHAFA_COLORS  — default "256" (widely supported; "full" for 24-bit if your font/terminal handles it)
@@ -24,7 +24,7 @@ CHAFA_SYMBOLS="${CHAFA_SYMBOLS:-block,braille,extra}"
 CHAFA_COLORS="${CHAFA_COLORS:-256}"
 
 command -v ffmpeg >/dev/null || { echo "need ffmpeg" >&2; exit 1; }
-command -v chafa >/dev/null || { echo "need chafa (brew install chafa)" >&2; exit 1; }
+command -v chafa >/dev/null || { echo "need terminal raster CLI on PATH" >&2; exit 1; }
 [[ -f "$GIF" ]] || { echo "not a file: $GIF" >&2; exit 1; }
 
 mkdir -p "$OUT"
