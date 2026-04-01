@@ -17,25 +17,9 @@
 
 ## Quick start
 
-**One-liner install** (downloads to `~/.local/bin`):
-
 ```bash
-curl -fsSL https://raw.githubusercontent.com/nateGeorge/agi-cli/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/nateGeorge/agi-cli/main/install.sh | bash && agi
 ```
-
-**Or clone and run directly:**
-
-```bash
-git clone https://github.com/nateGeorge/agi-cli.git
-cd agi-cli
-./agi
-```
-
-```bash
-agi
-```
-
-Add `~/.local/bin` to your `PATH` if the installer prints a reminder (default install location).
 
 ---
 
@@ -167,14 +151,10 @@ sequenceDiagram
 ## Installation
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/nateGeorge/agi-cli/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/nateGeorge/agi-cli/main/install.sh | bash && agi
 ```
 
-Ensure `~/.local/bin` is on your `PATH`, then:
-
-```bash
-agi
-```
+The installer places `agi` in `/usr/local/bin` (or `~/.local/bin` if `/usr/local/bin` is not writable). If it falls back, follow the PATH instructions printed by the installer.
 
 ---
 
