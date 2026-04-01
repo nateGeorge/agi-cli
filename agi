@@ -92,11 +92,19 @@ emit_dance_frame() {
 
 # Local audio only: AGI_AUDIO=file or ~/.config/agi-cli/audio.{ext} — no network fetch.
 agi_resolve_audio_path() {
-  local f d="$HOME/.config/agi-cli" x
+  local f d="$HOME/.config/agi-cli" x script_dir
   if [[ -n "${AGI_AUDIO:-}" && -f "$AGI_AUDIO" ]]; then
     printf '%s' "$AGI_AUDIO"
     return 0
   fi
+  script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+  for x in m4a mp3 wav flac ogg aac opus; do
+    f="$script_dir/embed/audio/agi_theme.$x"
+    if [[ -f "$f" ]]; then
+      printf '%s' "$f"
+      return 0
+    fi
+  done
   for x in m4a mp3 wav flac ogg aac opus; do
     f="$d/audio.$x"
     if [[ -f "$f" ]]; then
@@ -111,25 +119,17 @@ agi_play_audio() {
   local file="$1"
   [[ -f "$file" ]] || return 1
   if command -v mpv >/dev/null 2>&1; then
-    mpv --no-video --really-quiet --loop=inf "$file" &
+    mpv --no-video --really-quiet "$file" &
     agi_audio_pid=$!
     return 0
   fi
   if command -v ffplay >/dev/null 2>&1; then
-    (
-      while true; do
-        ffplay -nodisp -autoexit -loglevel quiet "$file" 2>/dev/null || sleep 0.2
-      done
-    ) &
+    ffplay -nodisp -autoexit -loglevel quiet "$file" 2>/dev/null &
     agi_audio_pid=$!
     return 0
   fi
   if [[ "$(uname -s)" == Darwin ]] && command -v afplay >/dev/null 2>&1; then
-    (
-      while true; do
-        afplay "$file" 2>/dev/null || sleep 0.5
-      done
-    ) &
+    afplay "$file" 2>/dev/null &
     agi_audio_pid=$!
     return 0
   fi

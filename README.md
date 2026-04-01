@@ -17,8 +17,18 @@
 
 ## Quick start
 
+**One-liner install** (downloads to `~/.local/bin`):
+
 ```bash
 curl -fsSL https://raw.githubusercontent.com/nateGeorge/agi-cli/main/install.sh | bash
+```
+
+**Or clone and run directly:**
+
+```bash
+git clone https://github.com/nateGeorge/agi-cli.git
+cd agi-cli
+./agi
 ```
 
 ```bash
@@ -53,7 +63,7 @@ The `agi` binary starts an **interactive alignment session**: live visualization
 | `docs/` | Architecture, reproducibility, weights policy, third-party notices. |
 | `scripts/` | Env checks, manifest stubs, GIF→frame helper, integrity placeholders. |
 | `docker/` | Optional smoke-test image. |
-| `embed/` | Optional bundled assets for the session visualizer (`embed/frames/`). |
+| `embed/` | Optional bundled assets for the session visualizer (`embed/frames/`, `embed/audio/`). |
 
 ---
 
