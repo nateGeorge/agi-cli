@@ -35,14 +35,11 @@ The `agi` binary starts an **interactive alignment session**: live visualization
 |------|---------|
 | `agi` | Interactive session entrypoint (reference build). |
 | `config/` | Declarative profiles for RCE / TSL / router defaults. |
-| `eval/` | Harness version + frozen summary artifacts (internal parity). |
-| `benchmarks/` | Regression tables (latency / throughput snapshots). |
-| `docs/` | Architecture & reproducibility notes. |
-| `scripts/` | Environment checks, manifest stubs, integrity placeholders. |
+| `eval/` | Harness version, frozen eval JSON, regression tables under `eval/benchmarks/`. |
+| `docs/` | Architecture, reproducibility, weights policy, third-party notices. |
+| `scripts/` | Env checks, manifest stubs, GIF→frame helper, integrity placeholders. |
 | `docker/` | Optional smoke-test image. |
 | `frames/` | Pre-rendered terminal animation (text). |
-| `tools/` | Dev helpers (e.g. regenerating `frames/` from a local GIF). |
-| `weights/` | **Not shipped** — see `weights/README.md`. |
 
 ---
 

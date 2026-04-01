@@ -43,7 +43,7 @@ clear_screen() { printf '\033[2J\033[H'; }
 # Shorter lyric lines are safe because each printed line ends with EL (\033[K).
 stream_redraw_start() { printf '\033[H'; }
 
-# Optional: pre-rendered frames as *.txt (see tools/gif_to_agi_frames.sh).
+# Optional: pre-rendered frames as *.txt (see scripts/gif_to_agi_frames.sh).
 # Search order: AGI_FRAMES_DIR, then <script-dir>/frames (git checkout), then ~/.config/agi-cli/frames.
 AGI_FRAME_FILES=()
 AGI_FRAME_N=0

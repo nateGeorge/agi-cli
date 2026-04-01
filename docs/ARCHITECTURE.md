@@ -16,4 +16,6 @@ This repository tracks the **reference CLI** and configuration surfaces for the 
 
 ## Weights
 
-Model artifacts are **not distributed** in this repository; see `weights/README.md`.
+Model artifacts are **not distributed** in this repository; see `docs/weights.md`.
+
+For harness parity and pinned evals, cross-check `docs/REPRODUCIBILITY.md`.

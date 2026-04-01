@@ -3,3 +3,6 @@
 *.tmp
 .env
 .env.*
+
+# Local weight checkpoints (see docs/weights.md)
+weights/

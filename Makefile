@@ -7,7 +7,7 @@ help:
 	@echo "  fmt-sh  — normalize trailing newlines on shell scripts"
 
 check:
-	@bash -n agi && bash -n install.sh && bash -n scripts/verify_env.sh && bash -n scripts/hash_weights.sh && bash -n scripts/export_manifest.sh && echo "OK: bash syntax"
+	@bash -n agi && bash -n install.sh && bash -n scripts/verify_env.sh && bash -n scripts/hash_weights.sh && bash -n scripts/export_manifest.sh && bash -n scripts/gif_to_agi_frames.sh && echo "OK: bash syntax"
 
 fmt-sh:
 	@perl -pi -e 's/\r$$//' agi install.sh scripts/*.sh 2>/dev/null; echo "OK"
