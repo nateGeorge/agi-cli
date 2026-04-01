@@ -39,6 +39,10 @@ RV=$(tput rev 2>/dev/null || printf '')
 
 clear_screen() { printf '\033[2J\033[H'; }
 
+# Stream repaint: home cursor only (full clear every frame makes the GIF flicker).
+# Shorter lyric lines are safe because each printed line ends with EL (\033[K).
+stream_redraw_start() { printf '\033[H'; }
+
 # Optional: pre-rendered frames as *.txt (see tools/gif_to_agi_frames.sh).
 # Search order: AGI_FRAMES_DIR, then <script-dir>/frames (git checkout), then ~/.config/agi-cli/frames.
 AGI_FRAME_FILES=()
@@ -361,8 +365,7 @@ stream_phase() {
   while true; do
     frame_idx=$(( tick % nframes ))
     stream_idx=$(( (tick / steps_per_lyric) % ${#COHERENCE_SNIPPETS[@]} ))
-    # Full clear each frame: cursor-home alone leaves stale characters when a line gets shorter.
-    clear_screen
+    stream_redraw_start
     printf '\n'
     printf '  %s%sAGI · latent manifold · semantic stream (live)%s\033[K\n' "${BD}" "${M}" "${X}"
     printf '\n'
